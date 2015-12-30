@@ -46,7 +46,7 @@ O2 <- merge(O2_mean,O2_sderr,by="X1",all=TRUE)
 colnames(O2) <- c("date","BayO2_mean","ProvO2_mean","BayO2_sderr","ProvO2_sderr")
 O2$datelabel <- format(as.Date(O2$date),format="%b-%y")
 
-#### Figure 1 ####
+#### Figure 2 ####
 
 par(mfrow = c(1,2))
 
@@ -72,7 +72,7 @@ text(1,250,"b")
 par(mfrow = c(1,1))
 
 
-#### Figure 2 ####
+#### Figure 3 ####
 
 #This is to make a similar figure to the above but with O2 
 par(mfrow = c(1,2))
@@ -99,7 +99,7 @@ text(1,7000,"b")
 par(mfrow = c(1,1))
 
 
-#### Figure 3 ####
+#### Figure 4 ####
 
 lmo2 = mimsdata$O2Flux/2
 N2_fit = lm(mimsdata$N2Flux~lmo2)
