@@ -1,3 +1,19 @@
+#### A WORKFLOW FOR REPRODUCING MEAN BENTHIC GAS FLUXES ####
+
+# Copyright 2016 Robinson W. Fulweiler, Hollie E. Emery, Timothy J. Maguire ####
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #### Set up ####
 ## packages that are needed for this script
 library(plotrix)
@@ -59,7 +75,7 @@ plotter(mean,sderr,names,"green4",c(-300,300))
 axis(2,cex.axis=.7,tcl=-.2,las=2) #adds an axis with labels
 mtext(side = 2, text = expression(Net ~ Sediment ~ N[2]-N ~ Flux ~ (mu ~ mol ~ m^{-2} ~ h^{-1})), line = 2.8, cex=.7)
 text(1,250,"a")
-text(12,-200, bquote(atop(Mean  ~ Sediment ~ N[2]-N ~ Flux , .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ (mu ~ mol ~ m^{-2} ~ h^{-1}))), cex=.7, col = "green4", adj=c(0,0))
+text(12,-150, bquote(Mean: .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ mu ~ mol ~ m^{-2} ~ h^{-1}), cex=.7, col = "green4", adj=c(0,0))
 
 #plot B - Narragansett Bay
 par(fig=c(0.55,.95,.2,.9),mai=c(0,0,0,0),new=TRUE)
@@ -69,7 +85,7 @@ names <- N2$datelabel
 plotter(mean,sderr,names,"red3",c(-300,300))
 axis(2,labels=FALSE,tcl=-.2) #adds an axis without labels
 text(1,250,"b")
-text(12,-200, bquote(atop(Mean  ~ Sediment ~ N[2]-N ~ Flux , .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ (mu ~ mol ~ m^{-2} ~ h^{-1}))), cex=.7, col = "red3", adj =c(0,0))
+text(12,-150, bquote(Mean: .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ mu ~ mol ~ m^{-2} ~ h^{-1}), cex=.7, col = "red3", adj =c(0,0))
 
 dev.off()
 
@@ -86,7 +102,7 @@ plotter(mean,sderr,names,"green4",c(0,8000))
 axis(2,cex.axis=.7,tcl=-.2,las=2) #adds an axis with labels
 mtext(side = 2, text = expression(Sediment ~ O[2] ~ Demand ~ (mu ~ mol ~ m^{-2} ~ h^{-1})), line = 2.8, cex=.7)
 text(1,7000,"a",adj=c(0,0))
-text(12,7000,bquote(atop(Mean  ~ Sediment ~ O[2] ~ Demand , .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ (mu ~ mol ~ m^{-2} ~ h^{-1}))), cex=.7, col = "green4",adj = c(0,0))
+text(12,7000,bquote(Mean: .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ mu ~ mol ~ m^{-2} ~ h^{-1}), cex=.7, col = "green4",adj = c(0,0))
 
 #plot B - Narragansett Bay
 par(fig=c(0.55,.95,.2,.9),mai=c(0,0,0,0),new=TRUE)
@@ -96,15 +112,18 @@ names <- O2$datelabel
 plotter(mean,sderr,names,"red3",c(0,8000))
 axis(2,labels=FALSE,tcl=-.2) #adds an axis without labels
 text(1,7000,"b", adj=c(0,0))
-text(12,7000,bquote(atop(Mean  ~ Sediment ~ O[2] ~ Demand , .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ (mu ~ mol ~ m^{-2} ~ h^{-1}))), cex=.7, col = "red3",adj = c(0,0))
+text(12,7000,bquote(Mean: .(round(mean(mean,na.rm=T))) %+-% .(round(se(mean))) ~ mu ~ mol ~ m^{-2} ~ h^{-1}), cex=.7, col = "red3",adj = c(0,0))
 
-#dev.off()
+dev.off()
 
 #### Figure 4 ####
 
 lmo2 = mimsdata$O2Flux/2
+prov_o2 = mimsdata[which(mimsdata$Site == "Prov"),]$O2Flux/2
+mid_o2 = mimsdata[which(mimsdata$Site == "Mid Bay"),]$O2Flux/2
+Prov_fit = lm(mimsdata[which(mimsdata$Site == "Prov"),]$N2Flux~prov_o2)
+Mid_fit = lm(mimsdata[which(mimsdata$Site == "Mid Bay"),]$N2Flux~mid_o2)
 N2_fit = lm(mimsdata$N2Flux~lmo2)
-#summary(N2_fit)
 
 #make a vector of plotting symbols
 symbol=ifelse(mimsdata[,1]=="Prov",19,ifelse(mimsdata[,1]=="Mid Bay",1,NA))
@@ -114,6 +133,8 @@ postscript("Figure4.eps")
 par(mai=c(1.02,0.82,0.82,0.42))
 plot(lmo2, mimsdata$N2Flux, pch=symbol,  ylim = c(-300,350),xlab="", ylab="")
 abline(N2_fit)
+abline(Prov_fit,col="green", lty=3)
+abline(Mid_fit, col="blue", lty=3)
 mtext(side = 2, text = expression(Net ~ Sediment ~ N[2]-N ~ Flux ~ (mu ~ mol ~ m^{-2} ~ h^{-1})), line = 1.8)
 mtext(side = 1, text = expression(O[2] ~ Flux ~ (mu ~ mol ~ m^{-2} ~ h^{-1})), line = 2.5)
 options(scipen=999)
